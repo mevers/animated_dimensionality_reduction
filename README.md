@@ -30,6 +30,7 @@ Furthermore we need the following packages for processing data and writing the f
 
 ```r
 install.packages("tidyverse")
+install.packages("hrbrthemes")
 install.packages("animation")
 ```
 
@@ -57,6 +58,8 @@ We perform dimensionality reduction using the functions
 All functions take the 10,000x784 matrix `df[, -1]` as input. We store results in a `res_lst` and timing information from `system.time` in `t_lst`.
 
 ```r
+library(Rtsne)
+library(umap)
 t_lst <- list()
 res_lst <- list()
 t_lst[["t-SNE"]] <- system.time(
@@ -67,3 +70,32 @@ t_lst[["UMAP"]] <- system.time(
 t_lst[["PCA"]] <- system.time(
     res_lst[["PCA"]] <- prcomp(df[, -1]))
 ```
+
+## Timings
+
+The timing results of the three different DR techniques are shown in the following figure.
+
+```r
+t_df <- t_lst %>%
+    map(stack) %>%
+    bind_rows(.id = "algorithm")
+
+t_df %>%
+    pivot_wider(values_from = values, names_from = ind)
+## A tibble: 3 x 6
+#  algorithm user.self sys.self elapsed user.child sys.child
+#  <chr>         <dbl>    <dbl>   <dbl>      <dbl>     <dbl>
+#1 t-SNE          68.4    1.57     85.2          0         0
+#2 UMAP          104.    10.0     132.           0         0
+#3 PCA            25.4    0.464    28.2          0         0    
+
+library(hrbrthemes)
+t_df %>%
+    filter(values > 0) %>%
+    rename(times = ind) %>%
+    ggplot(aes(algorithm, values, fill = times)) +
+    geom_col() +
+    theme_ft_rc()
+```
+
+![Figure `timings.png` not found](timings.png)
