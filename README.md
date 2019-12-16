@@ -182,3 +182,15 @@ saveGIF({
 ```
 
 ![Figure `animation.gif` not found](./animation.gif)
+
+## References
+
+### t-SNE
+- [L. van der Maaten and G. Hinton, *Visualising Data using t-SNE*, Journal of Machine Learning 9, 2579 (2008)  ](http://www.jmlr.org/papers/volume9/vandermaaten08a/vandermaaten08a.pdf)
+- [Comprehensive Guide on t-SNE algorithm with implementation in R & Python](https://www.analyticsvidhya.com/blog/2017/01/t-sne-implementation-r-python/)
+- [Quick and easy t-SNE analysis in R](https://www.r-bloggers.com/quick-and-easy-t-sne-analysis-in-r/)
+
+### UMAP
+- [L. McInnes, J. Healy and J. Melville, *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction*, arXiv:1802.03426 (2018)](https://arxiv.org/abs/1802.03426)
+- [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://umap-learn.readthedocs.io/en/latest/index.html)
+- [Uniform Manifold Approximation and Projection in R](https://cran.r-project.org/web/packages/umap/vignettes/umap.html)
