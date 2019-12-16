@@ -199,6 +199,14 @@ saveGIF({
 - [Uniform Manifold Approximation and Projection in R](https://cran.r-project.org/web/packages/umap/vignettes/umap.html)
 
 
+## Comments
+
+### A comment on the timings results
+
+- `Rtsne` is a wrapper around the [fast C++ based Barnes-Hut implementation of the t-SNE algorithm](https://github.com/lvdmaaten/bhtsne/) from the original author (Laurens van der Maaten).
+- By default, `umap` uses an implementation of the UMAP algorithm written in R. It is possible to use a faster Python-based implementation via the `umap-learn` Python package. Details on how to do that can be found on [Interfacing with python package ‘umap-learn’](https://cran.r-project.org/web/packages/umap/vignettes/umap_learn.html).
+
+
 ## `sessionInfo`
 
 ```r
