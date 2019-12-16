@@ -11,9 +11,9 @@ We compare results from three different DR techniques
 - t-distributed stochastic neighbour embedding (t-SNE), and
 - uniform manifold approximation and projection (UMAP)
 
-We don't give any details involving the different DR techniques, as this would go beyond the scope of this short example and wouldn't do justice to the plethora of excellent material available online. Some references with links are given at the end of this README.md.
+We don't give any details involving the different DR techniques, as this would go beyond the scope of this short example and wouldn't do justice to the plethora of excellent material available online. Some references with links are given at the end of this [README.md](README.md).
 
-As source data we use a subset of 10,000 images from the [MNIST database of handwritten digits](http://yann.lecun.com/exdb/mnist/). The original MNIST training database contains 60,000 28x28 pixel images from approximately 250 writers. The input data consists of a 10,000x784 matrix.
+As source data we use a subset of 10,000 images from the [MNIST database of handwritten digits](http://yann.lecun.com/exdb/mnist/). The original MNIST training database contains 60,000 28x28 pixel images from approximately 250 writers. Here the input data consist of a 10,000x784 matrix.
 
 We use `tweenr` to create a smooth animation linking results from the three different DR techniques. [`tweenr`](https://github.com/thomasp85/tweenr) creates smooth animations by calculating intermediate values between different states (here, the different DR results). We then use `animation::saveGIF` to store the animation in an animated GIF.
 
@@ -42,8 +42,7 @@ We load the MNIST traning data (which has already been [conveniently formatted a
 
 ```r
 library(tidyverse)
-df <- read_csv("train.zip")
-df <- df %>% head(10000)
+df <- read_csv("train.zip") %>% head(10000)
 ```
 
 The resulting `df` is a 10,000x785-dimensional `data.frame`, where the first column `df[, 1]` contains the label (the number) and the remaining 784 columns encode the 28x28 pixels.
@@ -198,6 +197,7 @@ saveGIF({
 - [L. McInnes, J. Healy and J. Melville, *UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction*, arXiv:1802.03426 (2018)](https://arxiv.org/abs/1802.03426)
 - [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://umap-learn.readthedocs.io/en/latest/index.html)
 - [Uniform Manifold Approximation and Projection in R](https://cran.r-project.org/web/packages/umap/vignettes/umap.html)
+
 
 ## `sessionInfo`
 
