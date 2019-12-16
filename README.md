@@ -98,7 +98,7 @@ t_df %>%
     theme_ft_rc()
 ```
 
-![Figure `timings.png` not found](timings.png)
+![Figure `timings.png` not found](./timings.png)
 
 ## Animation
 
@@ -144,7 +144,6 @@ data_tween <- filter(data, algorithm == "PCA") %>%
     tween_state(
         filter(data, algorithm == "PCA"),
         ease = "cubic-in-out", nframes = 100) %>%
-    keep_state(10) %>%
     group_split(.frame)
 ```
 
@@ -165,17 +164,21 @@ We are now ready to generate the animated GIF by looping through the tweened dat
 ```r
 library(animation)
 oopt <- ani.options(interval = 1 / 20)
+i <- 1
 saveGIF({
     for (d in data_tween) {
+        cat(sprintf("Processing %i/%i\n", i, length(data_tween)))
         gg <- gg_base %+% d
         gg <- gg + labs(
             title = sprintf("Dimensionality reduction algorithm: %s",
             unique(d$algorithm)),
-            subtitle = "Source data: Subset of MNIST")
+            subtitle = "Source data: Subset of MNIST",
+            caption = "Author: Maurits Evers (maurits.evers@gmail.com)")
         plot(gg)
+        i <- i + 1
     }},
-    movie.name = "~/Downloads/example.gif",
-    ani.width = 700, ani.height = 540)
+    movie.name = "animation.gif",
+    ani.width = 800, ani.height = 640)
 ```
 
-![Figure `animation.gif` not found](animation.gif)
+![Figure `animation.gif` not found](./animation.gif)
