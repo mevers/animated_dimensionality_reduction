@@ -99,3 +99,83 @@ t_df %>%
 ```
 
 ![Figure `timings.png` not found](timings.png)
+
+## Animation
+
+We first define a helper function that extracts data of the first two reduced dimensions for every image and for every DR technique.  
+
+```r
+get_data <- function(res, labels) {
+    if (class(res) == "umap") {
+        df <- res$layout
+    } else if (class(res) == "prcomp") {
+        df <- res$x[, 1:2]
+    } else if ("Y" %in% names(res)) df <- res$Y
+    df %>%
+        as.data.frame() %>%
+        bind_cols(cbind.data.frame(Label = labels)) %>%
+        setNames(c("Dimension 1", "Dimension 2", "Label")) %>%
+        mutate(Label = as.factor(Label))
+}
+```
+
+We then extract data from `res_lst`
+
+```r
+data <- res_lst %>%
+    map(get_data, df[, 1]) %>%
+    bind_rows(.id = "algorithm")
+```
+
+and create the "tweened" data
+
+```r
+library(tweenr)
+data_tween <- filter(data, algorithm == "PCA") %>%
+    keep_state(10) %>%
+    tween_state(
+        filter(data, algorithm == "t-SNE"),
+        ease = "cubic-in-out", nframes = 100) %>%
+    keep_state(10) %>%
+    tween_state(
+        filter(data, algorithm == "UMAP"),
+        ease = "cubic-in-out", nframes = 100) %>%
+    keep_state(10) %>%
+    tween_state(
+        filter(data, algorithm == "PCA"),
+        ease = "cubic-in-out", nframes = 100) %>%
+    keep_state(10) %>%
+    group_split(.frame)
+```
+
+`data_tween` is a `list` of `data.frame`s, one for every frame.
+
+We now create the base `ggplot2`-based `grob`
+
+```r
+gg_base <- ggplot() +
+    geom_text(
+        aes(x = `Dimension 1`, y = `Dimension 2`, colour = Label, label = Label),
+        size = 3, alpha = 0.5, show.legend = F) +
+    theme_ft_rc()
+```
+
+We are now ready to generate the animated GIF by looping through the tweened data and adding the per-frame `data.frame`s.
+
+```r
+library(animation)
+oopt <- ani.options(interval = 1 / 20)
+saveGIF({
+    for (d in data_tween) {
+        gg <- gg_base %+% d
+        gg <- gg + labs(
+            title = sprintf("Dimensionality reduction algorithm: %s",
+            unique(d$algorithm)),
+            subtitle = "Source data: Subset of MNIST")
+        plot(gg)
+    }},
+    movie.name = "~/Downloads/example.gif",
+    ani.width = 700, ani.height = 540)
+```
+
+![Figure `animation.gif` not found](animation.gif)
