@@ -1,11 +1,11 @@
 # animated_dimensionality_reduction
 
-Animation showing the results of three different dimensionality reduction (DR) techniques in R.
+Animation showing the results of different dimensionality reduction (DR) techniques in R.
 
 
 ## Overview
 
-We compare results from three different DR techniques
+We compare results from four different DR techniques
 
 - principle component analysis (PCA),
 - t-distributed stochastic neighbour embedding (t-SNE),
@@ -21,7 +21,7 @@ We use `tweenr` to create a smooth animation linking results from the three diff
 
 ## Prerequisities
 
-In order to use t-SNE and UMAP in R the packages `Rtsne` and `umap` must be installed:
+In order to use t-SNE and UMAP in R the packages `Rtsne` and `umap` must be installed (available from CRAN); `largeVis` is [available from GitHub](https://github.com/elbamos/largeVis) and can be installed via `devtools::install_github`.
 
 ```r
 install.packages("Rtsne")
