@@ -1,17 +1,18 @@
 # animated_dimensionality_reduction
 
-Animation showing the results of three different dimensionality reduction (DR) techniques in R.
+Animation showing the results of different dimensionality reduction (DR) techniques in R.
 
 
 ## Overview
 
-We compare results from three different DR techniques
+We compare results from four different DR techniques
 
 - principle component analysis (PCA),
-- t-distributed stochastic neighbour embedding (t-SNE), and
-- uniform manifold approximation and projection (UMAP)
+- t-distributed stochastic neighbour embedding (t-SNE),
+- uniform manifold approximation and projection (UMAP), and
+- LargeVis
 
-We don't give any details involving the different DR techniques, as this would go beyond the scope of this short example and wouldn't do justice to the plethora of excellent material available online. Some references with links are given at the end of this [README.md](README.md).
+We don't give any details involving the different DR techniques, as this would go beyond the scope of this short example and wouldn't do justice to the plethora of excellent material available online. Some references with links are given at the end of this [README](README.md).
 
 As source data we use a subset of 10,000 images from the [MNIST database of handwritten digits](http://yann.lecun.com/exdb/mnist/). The original MNIST training database contains 60,000 28x28 pixel images from approximately 250 writers. Here the input data consist of a 10,000x784 matrix.
 
@@ -20,11 +21,12 @@ We use `tweenr` to create a smooth animation linking results from the three diff
 
 ## Prerequisities
 
-In order to use t-SNE and UMAP in R the packages `Rtsne` and `umap` must be installed:
+In order to use t-SNE and UMAP in R the packages `Rtsne` and `umap` must be installed (available from CRAN); `largeVis` is [available from GitHub](https://github.com/elbamos/largeVis) and can be installed via `devtools::install_github`.
 
 ```r
 install.packages("Rtsne")
 install.packages("umap")
+devtools::install_github("elbamos/largeVis")
 ```
 
 Furthermore we need the following packages for processing data and writing the final animated GIF.
@@ -52,14 +54,16 @@ The resulting `df` is a 10,000x785-dimensional `data.frame`, where the first col
 We perform dimensionality reduction using the functions
 
 - `prcomp` for PCA,
-- `Rtsne::Rtsne` for t-SNE, and
-- `umap::umap` for UMAP.
+- `Rtsne::Rtsne` for t-SNE,
+- `umap::umap` for UMAP, and
+- `largeVis::largeVis` for largeVis
 
 All functions take the 10,000x784 matrix `df[, -1]` as input. We store results in a `res_lst` and timing information from `system.time` in `t_lst`.
 
 ```r
 library(Rtsne)
 library(umap)
+library(largeVis)
 t_lst <- list()
 res_lst <- list()
 t_lst[["t-SNE"]] <- system.time(
@@ -69,12 +73,15 @@ t_lst[["UMAP"]] <- system.time(
     res_lst[["UMAP"]] <- umap::umap(df[, -1]))
 t_lst[["PCA"]] <- system.time(
     res_lst[["PCA"]] <- prcomp(df[, -1]))
+t_lst[["largeVis"]] <- system.time(
+    res_lst[["largeVis"]] <- largeVis(
+        df[, -1], n_trees = 50, tree_th = 200, K = 50))
 ```
 
 
 ## Timings
 
-The timing results of the three different DR techniques are shown in the following figure.
+The timing results of the different DR techniques are shown in the following figure.
 
 ```r
 t_df <- t_lst %>%
@@ -83,12 +90,13 @@ t_df <- t_lst %>%
 
 t_df %>%
     pivot_wider(values_from = values, names_from = ind)
-## A tibble: 3 x 6
+## A tibble: 4 x 6
 #  algorithm user.self sys.self elapsed user.child sys.child
 #  <chr>         <dbl>    <dbl>   <dbl>      <dbl>     <dbl>
-#1 t-SNE          68.4    1.57     85.2          0         0
-#2 UMAP          104.    10.0     132.           0         0
-#3 PCA            25.4    0.464    28.2          0         0    
+#1 t-SNE          36.0    0.791    37.5          0         0
+#2 UMAP           58.0   12.1      70.2          0         0
+#3 PCA            18.7    0.152    18.9          0         0
+#4 largeVis      394.     0.809   394.           0         0    
 
 library(hrbrthemes)
 t_df %>%
@@ -112,6 +120,8 @@ get_data <- function(res, labels) {
         df <- res$layout
     } else if (class(res) == "prcomp") {
         df <- res$x[, 1:2]
+    } else if (class(res) == "largeVis") {
+        df <- t(res$coords)
     } else if ("Y" %in% names(res)) df <- res$Y
     df %>%
         as.data.frame() %>%
@@ -134,15 +144,19 @@ and create the "tweened" data
 ```r
 library(tweenr)
 data_tween <- filter(data, algorithm == "PCA") %>%
-    keep_state(10) %>%
+    keep_state(20) %>%
     tween_state(
         filter(data, algorithm == "t-SNE"),
         ease = "cubic-in-out", nframes = 100) %>%
-    keep_state(10) %>%
+    keep_state(20) %>%
     tween_state(
         filter(data, algorithm == "UMAP"),
         ease = "cubic-in-out", nframes = 100) %>%
-    keep_state(10) %>%
+    keep_state(20) %>%
+    tween_state(
+        filter(data, algorithm == "largeVis"),
+        ease = "cubic-in-out", nframes = 100) %>%
+    keep_state(20) %>%
     tween_state(
         filter(data, algorithm == "PCA"),
         ease = "cubic-in-out", nframes = 100) %>%
@@ -198,9 +212,15 @@ saveGIF({
 - [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://umap-learn.readthedocs.io/en/latest/index.html)
 - [Uniform Manifold Approximation and Projection in R](https://cran.r-project.org/web/packages/umap/vignettes/umap.html)
 
+<<<<<<< HEAD
 ### Comparison t-SNE vs. UMAP
 - [Cross Validated: Intuitive explanation of how UMAP works, compared to t-SNE](https://stats.stackexchange.com/a/402756/121489)
 - [Background theory on the t-SNE and UMAP cost function](https://jlmelville.github.io/smallvis/theory.html)
+=======
+### largeVis
+- [J. Tang et al., *Visualizing Large-scale and High-dimensional Data*, arXiv:1602.00370 (2016)](https://arxiv.org/abs/1602.00370)
+
+>>>>>>> ce00ecbef1bb4aa49005f5668dfa87979c9e5132
 
 ## Comments
 
