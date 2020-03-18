@@ -198,6 +198,9 @@ saveGIF({
 - [UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction](https://umap-learn.readthedocs.io/en/latest/index.html)
 - [Uniform Manifold Approximation and Projection in R](https://cran.r-project.org/web/packages/umap/vignettes/umap.html)
 
+### Comparison t-SNE vs. UMAP
+- [Cross Validated: Intuitive explanation of how UMAP works, compared to t-SNE](https://stats.stackexchange.com/a/402756/121489)
+- [Background theory on the t-SNE and UMAP cost function](https://jlmelville.github.io/smallvis/theory.html)
 
 ## Comments
 
